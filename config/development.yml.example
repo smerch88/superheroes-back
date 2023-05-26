@@ -3,6 +3,3 @@ db:
   username: 'username'
   password: 'password'
   synchronize: true
-
-jwt:
-  secret: 'secret'

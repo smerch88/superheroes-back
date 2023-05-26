@@ -23,7 +23,7 @@ export class SuperheroesController {
   @Get()
   getSuperheroes(
     @Query(ValidationPipe) filterDto: GetSuperheroesFilterDto,
-  ): Promise<Superhero[]> {
+  ): Promise<{ superheroes: Superhero[]; total: number }> {
     return this.superheroesService.getSuperheroes(filterDto);
   }
 
@@ -45,7 +45,7 @@ export class SuperheroesController {
     return this.superheroesService.deleteSuperhero(id);
   }
 
-  @Patch('/:id/update')
+  @Patch('/:id')
   updateSuperhero(
     @Param('id', ParseIntPipe) id: number,
     @Body() createSuperheroDto: CreateSuperheroDto,

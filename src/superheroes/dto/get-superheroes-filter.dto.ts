@@ -4,4 +4,8 @@ export class GetSuperheroesFilterDto {
   @IsOptional()
   @IsNotEmpty()
   search: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  page: number;
 }

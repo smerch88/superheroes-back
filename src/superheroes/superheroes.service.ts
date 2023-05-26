@@ -14,8 +14,8 @@ export class SuperheroesService {
 
   async getSuperheroes(
     filterDto: GetSuperheroesFilterDto,
-  ): Promise<Superhero[]> {
-    const { search } = filterDto;
+  ): Promise<{ superheroes: Superhero[]; total: number }> {
+    const { search, page } = filterDto;
     const query = this.superheroRepository.createQueryBuilder('superhero');
 
     if (search) {
@@ -25,18 +25,14 @@ export class SuperheroesService {
       );
     }
 
-    const Superheroes = await query.getMany();
-    return Superheroes;
-  }
-
-  async getSuperheroById(id: number): Promise<Superhero> {
-    const found = await this.superheroRepository.findOne({ where: { id } });
-
-    if (!found) {
-      throw new NotFoundException(`Superhero with ID "${id}" not found`);
+    const perPage = 5;
+    if (page) {
+      const skippedItems = (page - 1) * perPage;
+      query.skip(skippedItems).take(perPage);
     }
 
-    return found;
+    const [superheroes, total] = await query.getManyAndCount();
+    return { superheroes, total };
   }
 
   async createSuperhero(
@@ -62,6 +58,14 @@ export class SuperheroesService {
     await superhero.save();
 
     return superhero;
+  }
+
+  async getSuperheroById(id: number): Promise<Superhero> {
+    const found = await this.superheroRepository.findOne({ where: { id } });
+    if (!found) {
+      throw new NotFoundException(`Superhero with ID "${id}" not found`);
+    }
+    return found;
   }
 
   async deleteSuperhero(id: number): Promise<void> {
